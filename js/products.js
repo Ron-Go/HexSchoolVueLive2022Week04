@@ -23,16 +23,15 @@ const app = createApp({
         pagination
     },
     created(){
-        // 取得存在cookie的token資訊
-        const token = document.cookie.replace(/(?:(?:^|.*;\s*)myToken\s*\=\s*([^;]*).*$)|^.*$/,"$1");
-        // 把token加入axios的headers授權資料
-        axios.defaults.headers.common["Authorization"] = token;
         this.checkLogin();
-        
     },
     methods: {
         // 檢查是否登入
         checkLogin(){
+            // 取得存在cookie的token資訊
+            const token = document.cookie.replace(/(?:(?:^|.*;\s*)myToken\s*\=\s*([^;]*).*$)|^.*$/,"$1");
+            // 把token加入axios的headers授權資料
+            axios.defaults.headers.common["Authorization"] = token;
             axios.post(`${this.api.url}/api/user/check`)
             .then((res) => {
                 // 檢查登入狀態，成功的話取得商品資料
@@ -43,9 +42,7 @@ const app = createApp({
                 window.location = 'login.html';
             })
         },
-        // 取得全部商品資料
-
-
+        // 取得商品資料
         // 參數為頁數，用預設值 = 1
         // 呼叫時不設定參數，就用1代入
         getData(page = 1){
