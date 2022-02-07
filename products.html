@@ -16,7 +16,7 @@
                 <button type="button" class="btn btn-outline-danger ms-3" @click="logOut">登出管理後台</button>
             </div>
             <!-- 產品清單 -->
-            <div class="col-12 col-lg-7">
+            <div class="col-12">
                 <table class="table">
                     <thead>
                         <tr>
@@ -46,11 +46,13 @@
                             </td>
                         </tr>
                     </tbody>
-                    
                 </table>
+                <!-- 分頁元件 -->
+                <pagination :pagination="pagination" @send-page="getData"
+                ></pagination>
             </div>
             <!-- 新增、編輯產品 -->
-            <div class="col-12 col-lg-5">
+            <div class="col-12">
                 <h4>
                     <span v-if="manageMode == 1">建立新產品</span>
                     <span v-else-if="manageMode == 2">編輯產品</span>
@@ -123,6 +125,7 @@
                     <button type="submit" class="btn btn-outline-primary ms-3"
                     @click.prevent="sendDataToApi">送出</button>
                 </form>
+
             </div>
         </div>
     </div>

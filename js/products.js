@@ -1,4 +1,6 @@
 import { createApp } from 'https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.26/vue.esm-browser.min.js';
+// 預設匯入『分頁』元件
+import pagination from './pagination.js';
 
 const app = createApp({
     data() {
@@ -13,7 +15,12 @@ const app = createApp({
             },
             // 0.初始狀態、1.新增商品、2.編輯商品
             manageMode: 0,
+            pagination: {}
         };
+    },
+    components:{
+        // 區域註冊『分頁』元件
+        pagination
     },
     created(){
         // 取得存在cookie的token資訊
@@ -37,11 +44,19 @@ const app = createApp({
             })
         },
         // 取得全部商品資料
-        getData(){
-            axios.get(`${this.api.url}/api/${this.api.path}/admin/products`)
+
+
+        // 參數為頁數，用預設值 = 1
+        // 呼叫時不設定參數，就用1代入
+        getData(page = 1){
+            // 用query的方式，代出商品資料
+            // /?page=${ 頁數 }
+            axios.get(`${this.api.url}/api/${this.api.path}/admin/products/?page=${page}`)
             .then((res) => {
                 // 取得api商品資料，存放tempProducts，準備渲染畫面
                 this.tempProducts = res.data.products;
+                // 取得分頁資訊，存放pagination
+                this.pagination = res.data.pagination;
             })
             .catch((err) => {
                 alert("取得資料失敗");
