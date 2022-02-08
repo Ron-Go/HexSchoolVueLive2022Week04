@@ -1,6 +1,11 @@
 import { createApp } from 'https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.26/vue.esm-browser.min.js';
 // 預設匯入『分頁』元件
 import pagination from './pagination.js';
+// 預設匯入『productModal』元件
+import productModal from "./productModal.js";
+
+
+let myModal = {};
 
 const app = createApp({
     data() {
@@ -13,16 +18,19 @@ const app = createApp({
             manageProduct: {
                 
             },
-            // 0.初始狀態、1.新增商品、2.編輯商品
+            // 0.初始狀態、1.新增商品、2.編輯商品、3.刪除商品
             manageMode: 0,
             pagination: {}
         };
     },
     components:{
         // 區域註冊『分頁』元件
-        pagination
+        pagination,
+        // 區域註冊『productModal』元件
+        productModal
     },
-    created(){
+    mounted(){
+        myModal = new bootstrap.Modal(document.querySelector('#modal'));
         this.checkLogin();
     },
     methods: {
@@ -69,30 +77,31 @@ const app = createApp({
         },
         //新增產品
         addProduct(){
+            myModal.show();
             this.manageMode = 1;
             this.manageProduct = {};
         },
         // 編輯商品
         // 按下編輯button
         // 1.把v-for渲染的item代入參數，賦予給manageProduct（淺層複製）
-        // 2.modify = 2，顯示編輯輸入欄
+        // 2.modify = 2，進入編輯狀態
         modifyProduct(item){
+            myModal.show();
             this.manageMode = 2;
             this.manageProduct = {...item};
         },
-        deleteProduct(id){
-            axios.delete(`${this.api.url}/api/${this.api.path}/admin/product/${id}`)
-            .then((res) => {
-                alert('刪除資料成功');
-                //刪除商品，再重新取得全部資料渲染
-                this.getData();
-            })
-            .catch((err) => {
-                alert('刪除資料失敗');
-            })
+        // 刪除商品
+        // 點擊刪除，商品資料帶入參數
+        // modify = 3，進入刪除狀態
+        deleteProduct(product){
+            myModal.show();
+            this.manageMode = 3;
+            // 把商品id代入
+            console.log(product.id, product.title);
         },
-        // 新增/編輯產品=>送出
-        sendDataToApi(){
+        // 新增/編輯/刪除產品=>送出
+        // 參數id用來刪除產品使用
+        sendDataToApi(id){
             // 不同模式做不同的事
             if(this.manageMode == 1){
                 // 新增商品
@@ -104,6 +113,7 @@ const app = createApp({
                     this.manageProduct = {};
                     // manageMode回到初始狀態
                     this.manageMode = 0
+                    myModal.hide();
                     alert('新增商品完成');
                 })
                 .catch((err) => {
@@ -119,10 +129,25 @@ const app = createApp({
                     this.manageProduct = {};
                     // manageMode回到初始狀態
                     this.manageMode = 0;
+                    myModal.hide();
                     alert('修改商品完成');
                 })
                 .catch((err) => {
                     alert('修改商品失敗');
+                })
+            }else if (this.manageMode == 3) {
+                // 刪除商品
+                axios.delete(`${this.api.url}/api/${this.api.path}/admin/product/${id}`)
+                .then((res) => {
+                    myModal.hide();
+                    //刪除商品，再重新取得全部資料渲染
+                    alert('刪除資料成功');
+                    // manageMode回到初始狀態
+                    this.manageMode = 0;
+                    this.getData();
+                })
+                .catch((err) => {
+                    alert('刪除資料失敗');
                 })
             }
         },
