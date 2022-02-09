@@ -16,7 +16,7 @@ const app = createApp({
             },
             tempProducts: {},
             manageProduct: {
-                
+                // imagesUrl: []
             },
             // 0.初始狀態、1.新增商品、2.編輯商品、3.刪除商品
             manageMode: 0,
@@ -96,8 +96,9 @@ const app = createApp({
         deleteProduct(product){
             myModal.show();
             this.manageMode = 3;
-            // 把商品id代入
-            console.log(product.id, product.title);
+            this.manageProduct = {...product};
+            // 把商品id代入，刪除商品
+            // this.sendDataToApi(product.id);
         },
         // 新增/編輯/刪除產品=>送出
         // 參數id用來刪除產品使用
@@ -124,7 +125,8 @@ const app = createApp({
                 axios.put(`${this.api.url}/api/${this.api.path}/admin/product/${this.manageProduct.id}` , {data: this.manageProduct})
                 .then((res) => {
                     // 修改商品，再重新取得全部資料渲染
-                    this.getData();
+                    // 修改完商品，getData()不使用參數預設值，代入當前頁數避免跳回第一頁
+                    this.getData(this.pagination.current_page);
                     // 修改完再清空manageProduct
                     this.manageProduct = {};
                     // manageMode回到初始狀態
@@ -144,7 +146,8 @@ const app = createApp({
                     alert('刪除資料成功');
                     // manageMode回到初始狀態
                     this.manageMode = 0;
-                    this.getData();
+                    // 刪除完商品，getData()不使用參數預設值，代入當前頁數避免跳回第一頁
+                    this.getData(this.pagination.current_page);
                 })
                 .catch((err) => {
                     alert('刪除資料失敗');

@@ -24,6 +24,7 @@
                         <tr>
                             <th>分類</th>
                             <th>產品名稱</th>
+                            <th>星級評等</th>
                             <th>原價</th>
                             <th>售價</th>
                             <th>是否啟用</th>
@@ -34,6 +35,11 @@
                         <tr v-for="(product , key) in tempProducts" :key="product.id"> 
                             <td>{{ product.category }}</td>
                             <td>{{ product.title }}</td>
+                            <td>
+                                <template v-for="(star , key) in tempProducts[key].rating" :key="'star' + key">
+                                    <span class="text-warning">&star;</span>
+                                </template>
+                            </td>
                             <td>{{ product.origin_price}}</td>
                             <td>{{ product.price }}</td>
                             <td :class="{'text-success': product.is_enabled == '1' ? true : false}" class="fw-bold">
@@ -199,16 +205,33 @@
                                     </div>
                                     <div class="mb-3">
                                         <label for="description" class="form-label">商品描述</label>
-                                        <input type="text" class="form-control" id="description" placeholder="輸入商品描述"
-                                        v-model="manageProduct.description">
+                                        <textarea type="text" class="form-control" name="description" id="description" cols="30" rows="3"
+                                        placeholder="輸入商品描述"></textarea>
                                     </div>
                                     <div class="mb-3">
                                         <label for="content" class="form-label">商品內容</label>
-                                        <input type="text" class="form-control" id="content" placeholder="輸入商品內容"
-                                        v-model="manageProduct.content">
+                                        <textarea type="text" class="form-control" name="content" id="content" cols="30" rows="3"
+                                        placeholder="輸入商品內容"></textarea>
                                     </div>
-                                    
+                                    <div class="mb-3">
+                                        <label for="rating">評等</label>
+                                        <!-- 評等的v-model要加.number，不然資料型別是string，v-for無法渲染到畫面 -->
+                                        <select class="form-select" v-model.number="manageProduct.rating" name="rating" id="rating">
+                                            <option value="" disabled>星級評等</option>
+                                            <option class="text-danger" value="1">&star;</option>
+                                            <option value="2">&star;&star;</option>
+                                            <option value="3">&star;&star;&star;</option>
+                                            <option value="4">&star;&star;&star;&star;</option>
+                                            <option value="5">&star;&star;&star;&star;&star;</option>
+                                        </select>
+                                    </div>
                                     <div class="form-check mb-3">
+                                        <input type="checkbox" class="form-check-input" id="enable" value="1"
+                                        v-model="manageProduct.is_enabled"
+                                        true-value="1" false-value="0">
+                                        <label for="enable" class="form-label">是否啟用</label>
+                                    </div>
+                                    <!-- <div class="form-check mb-3">
                                         <input type="radio" class="form-check-input" id="enable" value="1"
                                         v-model="manageProduct.is_enabled">
                                         <label for="enable" class="form-label">商品啟用</label>
@@ -217,7 +240,7 @@
                                         <input type="radio" class="form-check-input" id="disable" value="0"
                                         v-model="manageProduct.is_enabled">
                                         <label for="disable" class="form-label">商品不啟用</label>
-                                    </div>
+                                    </div> -->
                                 </div>
                             </div>
                         </form>
