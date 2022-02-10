@@ -1,6 +1,6 @@
 export default {
-  props: ["pagination"],
-  template:
+    props: ["pagination"],
+    template:
     // v-for用.total_pages去渲染所有頁數
     // 點擊頁數、前一頁、後一頁，透過emit觸發外層根元件『同一個』methods
     // 點擊頁數，把頁數作為參數代入外層根元件methods，取得對應頁數的商品資料

@@ -15,12 +15,10 @@ const app = createApp({
                 path: "vue2022ron",
             },
             tempProducts: {},
-            manageProduct: {
-                // imagesUrl: []
-            },
+            manageProduct: {},
             // 0.初始狀態、1.新增商品、2.編輯商品、3.刪除商品
             manageMode: 0,
-            pagination: {}
+            pagination: {},
         };
     },
     components:{
@@ -32,6 +30,7 @@ const app = createApp({
     mounted(){
         myModal = new bootstrap.Modal(document.querySelector('#modal'));
         this.checkLogin();
+        console.log(this.$refs);
     },
     methods: {
         // 檢查是否登入
@@ -79,12 +78,15 @@ const app = createApp({
         addProduct(){
             myModal.show();
             this.manageMode = 1;
-            this.manageProduct = {};
+            // 新增產品會在manageProduct加入imagesUrl屬性
+            this.manageProduct = {
+                imagesUrl: []
+            };
         },
         // 編輯商品
         // 按下編輯button
         // 1.把v-for渲染的item代入參數，賦予給manageProduct（淺層複製）
-        // 2.modify = 2，進入編輯狀態
+        // 2.manageMode = 2，編輯狀態
         modifyProduct(item){
             myModal.show();
             this.manageMode = 2;
@@ -92,13 +94,14 @@ const app = createApp({
         },
         // 刪除商品
         // 點擊刪除，商品資料帶入參數
-        // modify = 3，進入刪除狀態
-        deleteProduct(product){
+        // manageMode = 3，刪除狀態
+        deleteProduct(item){
             myModal.show();
             this.manageMode = 3;
-            this.manageProduct = {...product};
-            // 把商品id代入，刪除商品
-            // this.sendDataToApi(product.id);
+            // 把商品資料代入manageProduct
+            // 1.刪除產品時，能取得商品名稱，呈現在畫面
+            // 2.取得id刪除資料用
+            this.manageProduct = {...item};
         },
         // 新增/編輯/刪除產品=>送出
         // 參數id用來刪除產品使用
@@ -142,14 +145,15 @@ const app = createApp({
                 axios.delete(`${this.api.url}/api/${this.api.path}/admin/product/${id}`)
                 .then((res) => {
                     myModal.hide();
-                    //刪除商品，再重新取得全部資料渲染
                     alert('刪除資料成功');
                     // manageMode回到初始狀態
                     this.manageMode = 0;
+                    //刪除商品，再重新取得全部資料渲染
                     // 刪除完商品，getData()不使用參數預設值，代入當前頁數避免跳回第一頁
                     this.getData(this.pagination.current_page);
                 })
                 .catch((err) => {
+                    myModal.hide();
                     alert('刪除資料失敗');
                 })
             }
@@ -160,7 +164,11 @@ const app = createApp({
             this.manageProduct = {};
             // manageMode回初始狀態
             this.manageMode = 0;
-        }
+            // 互動視窗元件Data回初始狀態
+            this.$refs.modalDom.uploadFile = {};
+            this.$refs.modalDom.uploadStatus = false;
+            
+        },
     },
 });
 
