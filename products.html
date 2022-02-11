@@ -16,12 +16,13 @@
                 <button type="button" class="btn btn-outline-danger ms-3" @click="logOut">登出管理後台</button>
             </div>
             <!-- 產品清單 -->
-            <div class="col-12 col-lg-7">
+            <div class="col-12">
                 <table class="table">
                     <thead>
                         <tr>
                             <th>分類</th>
                             <th>產品名稱</th>
+                            <th>星級評等</th>
                             <th>原價</th>
                             <th>售價</th>
                             <th>是否啟用</th>
@@ -32,101 +33,199 @@
                         <tr v-for="(product , key) in tempProducts" :key="product.id"> 
                             <td>{{ product.category }}</td>
                             <td>{{ product.title }}</td>
+                            <td>
+                                <template v-for="(star , key) in tempProducts[key].rating" :key="'star' + key">
+                                    <span class="text-warning">&star;</span>
+                                </template>
+                            </td>
                             <td>{{ product.origin_price}}</td>
                             <td>{{ product.price }}</td>
-                            <td :class="{'text-success': product.is_enabled == '1' ? true : false}" class="fw-bold">
+                            <td :class="{'text-success': product.is_enabled == true}" class="fw-bold">
                                 {{`${ product.is_enabled == 1 ? '啟用' : '不啟用'}`}}
                             </td>
                             <td class="btn-group">
-                                <button type="button" class="btn btn-outline-primary btn-sm"
+                                <button type="button" class="btn btn-outline-success btn-sm"
                                 @click="modifyProduct(product)">
                                 編輯</button>
                                 <button type="button" class="btn btn-outline-danger btn-sm"
-                                @click="deleteProduct(product.id)">刪除</button>
+                                @click="deleteProduct(product)">刪除</button>
                             </td>
                         </tr>
                     </tbody>
-                    
                 </table>
+                <!-- 分頁元件 -->
+                <pagination :pagination="pagination" @send-page="getData"
+                ></pagination>
             </div>
-            <!-- 新增、編輯產品 -->
-            <div class="col-12 col-lg-5">
-                <h4>
-                    <span v-if="manageMode == 1">建立新產品</span>
-                    <span v-else-if="manageMode == 2">編輯產品</span>
-                </h4>
-                <form v-if="manageMode == 2 || manageMode == 1" class="mt-3" action="">
-                    <div class="row mb-3">
-                        <div class="col-9">
-                            <label for="title" class="form-label">名稱</label>
-                            <input type="text" class="form-control" id="title" placeholder="輸入名稱"
-                            v-model="manageProduct.title">
-                        </div>
-                        <div class="col-3">
-                            <div class="mb-3">
-                                <label for="category" class="form-label">分類</label>
-                                <input type="text" class="form-control" id="category" placeholder="輸入分類"
-                                v-model="manageProduct.category">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-4">
-                            <label for="origin_price" class="form-label">原價</label>
-                            <input type="number" class="form-control" min="0" id="origin_price" placeholder="輸入原價"
-                            v-model.number="manageProduct.origin_price">
-                        </div>
-                        <div class="col-4">
-                            <label for="price" class="form-label">價格</label>
-                            <input type="number" class="form-control" min="0" id="price" placeholder="輸入價格"
-                            v-model.number="manageProduct.price">
-                        </div>
-                        <div class="col-4">
-                            <label for="unit" class="form-label">商品單位</label>
-                            <select id="unit" v-model="manageProduct.unit" class="form-select">
-                                <option value="" disabled>商品單位</option>
-                                <option value="個">個</option>
-                                <option value="支">支</option>
-                                <option value="公斤">公斤</option>
-                            </select>
-                        </div>
-                        
-                    </div>
-                    <div class="mb-3">
-                        <label for="description" class="form-label">商品描述</label>
-                        <input type="text" class="form-control" id="description" placeholder="輸入商品描述"
-                        v-model="manageProduct.description">
-                    </div>
-                    <div class="mb-3">
-                        <label for="content" class="form-label">商品內容</label>
-                        <input type="text" class="form-control" id="content" placeholder="輸入商品內容"
-                        v-model="manageProduct.content">
-                    </div>
-                    <div class="mb-3">
-                        <label for="imgUrl" class="form-label">商品圖片網址</label>
-                        <input type="text" class="form-control" id="imgUrl" placeholder="輸入圖片網址"
-                        v-model="manageProduct.imageUrl">
-                    </div>
-                    <img class="img-fluid mb-3" :src="manageProduct.imageUrl" alt="">
-                    <div class="form-check mb-3">
-                        <input type="radio" class="form-check-input" id="enable" value="1"
-                        v-model="manageProduct.is_enabled">
-                        <label for="enable" class="form-label">商品啟用</label>
-                    </div>
-                    <div class="form-check mb-3">
-                        <input type="radio" class="form-check-input" id="disable" value="0"
-                        v-model="manageProduct.is_enabled">
-                        <label for="disable" class="form-label">商品不啟用</label>
-                    </div>
-                    <button type="submit" class="btn btn-outline-danger"
-                    @click.prevent="cancelDataToApi">取消</button>
-                    <button type="submit" class="btn btn-outline-primary ms-3"
-                    @click.prevent="sendDataToApi">送出</button>
-                </form>
-            </div>
+            <!-- manageModal 區域註冊子元件 -->
+            <!-- ref="modalDom" 取得modal互動視窗元件的DOM元素 -->
+            <product-modal :manage-mode="manageMode" :manage-product="manageProduct"  :api="api" 
+            @manage-mode-dismiss="cancelDataToApi"
+            @cancel-data-to-api="cancelDataToApi"
+            @sand-data-to-api="sendDataToApi(manageProduct.id)" ref="manageModalDom"
+            ></product-modal>
+            <!-- messageModal 區域註冊子元件 -->
+            <status-modal ref="messageModalDom" @imgUrl=""></status-modal>
         </div>
     </div>
     
+    <script type="text/x-template" id="modal-template">
+        <!-- Modal template-->
+        <!-- modal互動視窗出現時，按下『esc』，manageMode = 0 -->
+        <div class="modal fade" id="manageModal" tabindex="-1" data-bs-backdrop="static" aria-labelledby="exampleModalLabel" aria-hidden="true" 
+            @keyup.esc="$emit('manage-mode-dismiss')">
+            <div class="modal-dialog  modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header bg-black" 
+                    :class="{
+                        'bg-primary': manageMode == 1,
+                        'bg-success': manageMode == 2,
+                        'bg-danger': manageMode == 3,
+                    }">
+                        <h5 class="text-white">
+                            <span v-if="manageMode == 1">建立新產品</span>
+                            <span v-else-if="manageMode == 2">編輯產品</span>
+                            <span v-else-if="manageMode == 3">刪除產品</span>
+                        </h5>
+                        <!-- modal互動視窗點擊『dismiss』，manageMode = 0 -->
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="$emit('manage-mode-dismiss')"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form v-if="manageMode == 2 || manageMode == 1" class="mt-3" action="">
+                            <div class="row">
+                                
+                                <div class="col-12 col-lg-4">
+                                    <div class="mb-3">
+                                        <img class="img-fluid d-block mb-3" :src="manageProduct.imageUrl" alt="">
+                                        <label for="imgUrl" class="form-label fs-4 fw-bold">商品主圖網址</label>
+                                        <input type="text" class="form-control" id="imgUrl" placeholder="輸入主圖網址"
+                                        v-model="manageProduct.imageUrl">
+                                    </div>
+                                    <!-- 舊的資料manageProduct沒有imagesUrl屬性，不會看到商品副圖功能 -->
+                                    <div v-if="Array.isArray(manageProduct.imagesUrl)" class="mb-3">
+                                        <h4>商品副圖網址</h4>
+                                        <template v-for="(item , key) in manageProduct.imagesUrl" :key="'img' + key">
+                                            <img class="img-fluid" :src="manageProduct.imagesUrl[key]" alt="">
+                                            <input type="text" class="form-control mb-3" v-model="manageProduct.imagesUrl[key]" :placeholder="`輸入副圖網址${key + 1}`">
+                                        </template>
+                                        
+                                        <button type="button" 
+                                        v-if="!manageProduct.imagesUrl.length || manageProduct.imagesUrl[manageProduct.imagesUrl.length - 1]" class="btn btn-primary w-100 mb-3" @click="manageProduct.imagesUrl.push('')">新增</button>
+                                        <button type="button" class="btn btn-outline-danger w-100" @click="manageProduct.imagesUrl.pop('')">刪除最後一個</button>
+                                    </div>
+                                    <!-- 上傳圖片功能只開放給新增產品 -->
+                                    <div class="mb-3" v-if="manageMode == 1">
+                                        <label class="form-label fs-4 fw-bold" for="file">上傳.PNG圖片</label>
+                                        <div class="btn-group">
+                                            <input type="file" class="btn btn-primary btn-sm" id="file" @change="checkFileType">
+                                        <!-- 上傳資料格式正確，才出現上傳檔案 -->
+                                        <button type="button" v-if="uploadFile.type !== ''" class="btn btn-outline-primary btn-sm fw-bold" 
+                                        :class="{'text-danger': uploadFile.type !== 'image/png'}"
+                                        @click="upload"
+                                        :disabled="uploadFile.type !== 'image/png'">{{` ${uploadFile.type !== 'image/png' ? '錯誤' : '上傳'} `}}</button>
+                                        </div>
+                                    </div>
+                                    <div v-if="uploadImgUrl !== ''" class="mb-3">
+                                        <label class="form-label" for="">上傳圖片網址</label>
+                                        <input class="form-control" type="text" v-model="uploadImgUrl">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12 col-lg-8">
+                                    <div class="row mb-3">
+                                        <div class="col-9">
+                                            <label for="title" class="form-label">名稱</label>
+                                            <input type="text" class="form-control" id="title" placeholder="輸入名稱"
+                                            v-model="manageProduct.title">
+                                        </div>
+                                        <div class="col-3">
+                                            <div class="mb-3">
+                                                <label for="category" class="form-label">分類</label>
+                                                <input type="text" class="form-control" id="category" placeholder="輸入分類"
+                                                v-model="manageProduct.category">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-4">
+                                            <label for="origin_price" class="form-label">原價</label>
+                                            <input type="number" class="form-control" min="0" id="origin_price" placeholder="輸入原價"
+                                            v-model.number="manageProduct.origin_price">
+                                        </div>
+                                        <div class="col-4">
+                                            <label for="price" class="form-label">價格</label>
+                                            <input type="number" class="form-control" min="0" id="price" placeholder="輸入價格"
+                                            v-model.number="manageProduct.price">
+                                        </div>
+                                        <div class="col-4">
+                                            <label for="unit" class="form-label">商品單位</label>
+                                            <select id="unit" v-model="manageProduct.unit" class="form-select">
+                                                <option value="" disabled>商品單位</option>
+                                                <option value="個">個</option>
+                                                <option value="支">支</option>
+                                                <option value="公斤">公斤</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="description" class="form-label">商品描述</label>
+                                        <textarea type="text" class="form-control" name="description" id="description" cols="30" rows="3"
+                                        placeholder="輸入商品描述"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="content" class="form-label">商品內容</label>
+                                        <textarea type="text" class="form-control" name="content" id="content" cols="30" rows="3"
+                                        placeholder="輸入商品內容"></textarea>
+                                    </div>
+                                    <div class="col-8 mb-3">
+                                            <label for="rating" class="form-label">評等</label>
+                                            <!-- 評等的v-model要加.number，不然資料型別是string，v-for無法渲染到畫面 -->
+                                            <select class="form-select" v-model.number="manageProduct.rating" name="rating" id="rating">
+                                                <option value="" disabled>選擇商品星級評等</option>
+                                                <option class="text-danger" value="1">&star;</option>
+                                                <option value="2">&star;&star;</option>
+                                                <option value="3">&star;&star;&star;</option>
+                                                <option value="4">&star;&star;&star;&star;</option>
+                                                <option value="5">&star;&star;&star;&star;&star;</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-6 form-check mb-3">
+                                            <input type="checkbox" class="form-check-input" id="enable" value="1"
+                                            v-model="manageProduct.is_enabled"
+                                            true-value="1" false-value="0">
+                                            <label for="enable" class="form-label">是否啟用</label>
+                                        </div>
+                                </div>
+                            </div>
+                        </form>
+                        <div v-else-if="manageMode == 3" class="div">
+                            <h4 class="text-danger">確認刪除此品項</h4>
+                            <h4>{{ manageProduct.title }}</h4>
+                            
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-outline-danger"
+                        @click.prevent="$emit('cancel-data-to-api')"
+                        data-bs-dismiss="modal">取消</button>
+                        
+                        <button type="submit" class="btn text-white"
+                        :class="{
+                            'btn-primary': manageMode == 1,
+                            'btn-success': manageMode == 2,
+                            'btn-danger': manageMode == 3,
+                        }" 
+                        @click.prevent="$emit('sand-data-to-api')">
+                            <span v-if="manageMode == 1">新增</span>
+                            <span v-else-if="manageMode == 2">編輯</span>
+                            <span v-else-if="manageMode == 3">刪除</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.min.js"></script>
     <script type="module" src="./js/products.js"></script>
 </body>
 </html>
