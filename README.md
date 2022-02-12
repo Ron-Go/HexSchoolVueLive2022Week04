@@ -3,7 +3,7 @@ About 六角學院Vue直播班2022第四週 - 元件化
 
 ### 產品管理登入
 * 根元件 
-  1.登入管理後台
+  1. 登入管理後台
     - methods
       1. loggin 登入管理後台
           - 輸入帳密進入後台管理
@@ -11,7 +11,7 @@ About 六角學院Vue直播班2022第四週 - 元件化
 
 ### 產品後台管理
 * 根元件
-  1.商品清單渲染
+  1. 商品清單渲染
     - methods
       1. `checkLogin 檢查是否登入`
           - 從cookie取得tokken，加入header資料
@@ -54,4 +54,4 @@ About 六角學院Vue直播班2022第四週 - 元件化
   
   - messageModal元件（statusModal）
     1. 訊息提示頁面（新增、編輯、刪除完成） 
-        - template `互動視窗`
+        - template `互動視窗`        
