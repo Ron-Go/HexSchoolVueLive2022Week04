@@ -4,10 +4,10 @@ About 六角學院Vue直播班2022第四週 - 元件化
 ### 產品管理登入
 * 根元件 
   1. 登入管理後台
-    - methods
-      1. loggin 登入管理後台
-          - 輸入帳密進入後台管理
-          - 把token、expired存入cookie 
+      - methods
+        1. loggin 登入管理後台
+            - 輸入帳密進入後台管理
+            - 把token、expired存入cookie 
 
 ### 產品後台管理
 * 根元件
