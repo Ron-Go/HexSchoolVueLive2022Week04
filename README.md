@@ -8,10 +8,16 @@ About 六角學院Vue直播班2022第四週 - 元件化
 * 根元件
   - 商品清單渲染
     - methods
-      1. `檢查是否登入`
-      2. `取得商品資料`
+      1. `checkLogin 檢查是否登入`
+      2. `getData 取得商品資料`
           - 代入頁數，取得對應資料 
-      4. `登出`
+      4. `logOut 登出`
+      5. `addProduct 新增產品`
+      6. `modifyProduct 編輯產品`
+      7. `deleteProduct 刪除產品`
+      8. `sendDataToApi 新增編輯刪除 to API`
+      9. `cancelDataToApi 取消 to API`
+      10. `returnMessage 訊息提示視窗`
       
 
 * 子元件（區域註冊）
