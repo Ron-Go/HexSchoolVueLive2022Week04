@@ -6,5 +6,5 @@ About 六角學院Vue直播班2022第四週 - 元件化
 
 ### 產品後台管理
 * 區域註冊
-- pagination 分頁元件
-- productModal manageModal元件
+  - pagination 分頁元件
+  - productModal manageModal元件
