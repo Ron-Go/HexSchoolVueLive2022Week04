@@ -8,5 +8,7 @@ About 六角學院Vue直播班2022第四週 - 元件化
 * 區域註冊
   - pagination (分頁元件)
   - productModal (manageModal元件)
-    -t4t4t4t
+    1.新增產品
+    2.編輯產品
+    3.刪除產品
   - statusModal (messageModal元件)
