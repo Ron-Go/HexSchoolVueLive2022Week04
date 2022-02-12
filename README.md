@@ -8,6 +8,7 @@ About 六角學院Vue直播班2022第四週 - 元件化
 * 子元件（區域註冊）
   - 分頁元件（pagination）
     1. 產品清單分頁控制
+    - template
   
   - manageModal元件 (productModal)
     1. 新增產品
