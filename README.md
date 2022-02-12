@@ -5,28 +5,28 @@ About 六角學院Vue直播班2022第四週 - 元件化
 * 根元件 
   1. 登入管理後台
       - methods
-        1. loggin 登入管理後台
+        1. `loggin 登入管理後台`
             - 輸入帳密進入後台管理
             - 把token、expired存入cookie 
 
 ### 產品後台管理
 * 根元件
   1. 商品清單渲染
-    - methods
-      1. `checkLogin 檢查是否登入`
-          - 從cookie取得tokken，加入header資料
-          - post API 驗證
-      3. `getData 取得商品資料`
-          - 代入頁數，取得對應資料 
-      4. `logOut 登出`
-          - 登出管理後台
-      6. `addProduct 新增產品`
-      8. `modifyProduct 編輯產品`
-      9. `deleteProduct 刪除產品`
-      10. `sendDataToApi 新增編輯刪除toAPI`
-      11. `cancelDataToApi 新增編輯刪除 取消toAPI`
-      12. `returnMessage 訊息提示視窗`
-          - 產品管理完成提示訊息
+      - methods
+        1. `checkLogin 檢查是否登入`
+            - 從cookie取得tokken，加入header資料
+            - post API 驗證
+        3. `getData 取得商品資料`
+            - 代入頁數，取得對應資料 
+        4. `logOut 登出`
+            - 登出管理後台
+        6. `addProduct 新增產品`
+        8. `modifyProduct 編輯產品`
+        9. `deleteProduct 刪除產品`
+        10. `sendDataToApi 新增編輯刪除toAPI`
+        11. `cancelDataToApi 新增編輯刪除 取消toAPI`
+        12. `returnMessage 訊息提示視窗`
+            - 產品管理完成提示訊息
       
 
 * 子元件（區域註冊）
