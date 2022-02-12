@@ -11,11 +11,11 @@ About 六角學院Vue直播班2022第四週 - 元件化
   
   - manageModal元件 (productModal)
     1. 新增產品
-       1.頁面
+       - 頁面
     3. 編輯產品
-       1.頁面
+       - 頁面
     5. 刪除產品
-       1.頁面
+       - 頁面
     7. 上傳圖片頁面
   
   - messageModal元件（statusModal）
